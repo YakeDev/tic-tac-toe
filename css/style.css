@@ -1,0 +1,51 @@
+body {
+  font-family: "satoshi", "Segoe UI", sans-serif;
+}
+
+h2 {
+  line-height: 0px;
+}
+
+.msg {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.game-section {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gameBoard {
+  display: grid;
+  grid-template-columns: repeat(3, 150px);
+  grid-template-rows: repeat(3, 150px);
+  gap: 3px;
+  /* background-color: rgb(21, 63, 191); */
+}
+
+.gameBoard div {
+  border: none;
+  background-color: #d2d8dc;
+  border-radius: 0;
+  background-image: unset;
+}
+
+.sqr {
+  color: rgb(29, 35, 50);
+  font-size: 6em;
+  font-weight: 500;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#newGame {
+  margin-top: 20px;
+  padding: 8px 24px;
+  background-color: #1d8aff;
+  color: white;
+  border: none;
+}
