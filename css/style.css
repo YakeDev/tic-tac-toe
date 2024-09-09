@@ -87,3 +87,17 @@ form button {
   cursor: pointer;
   border-radius: 8px;
 }
+
+form button::after {
+  content: "";
+  position: relative;
+  top: -30px;
+  left: -35px;
+  right: 0px;
+  margin: 0 auto;
+  width: 0;
+  height: 0;
+  border-bottom: 8px solid #1d8aff;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+}

@@ -8,17 +8,25 @@ const DomElts = (function () {
 })();
 
 const gameBoardArray = (function () {
-  let gameBoardArray = [null, null, null, null, null, null, null, null, null];
+  let board = [null, null, null, null, null, null, null, null, null];
 
   function resetBoard() {
-    gameBoardArray = [null, null, null, null, null, null, null, null, null];
+    board = [null, null, null, null, null, null, null, null, null];
   }
 
-  return { resetBoard, gameBoardArray };
+  function updateBoard(index, value) {
+    board[index] = value;
+  }
+
+  function getBoard() {
+    return board;
+  }
+
+  return { resetBoard, updateBoard, getBoard };
 })();
 
 const GameControllers = (function () {
-  let currentPlayers = null;
+  let currentPlayer = null;
   const winPatterns = [
     [0, 1, 2],
     [3, 4, 5],
@@ -36,47 +44,37 @@ const GameControllers = (function () {
   };
 
   function initGame() {
-    currentPlayers = players.player1; // Initialise le premier joueur
+    currentPlayer = players.player1; // Initialize the first player
   }
 
   function switchPlayer() {
-    currentPlayers =
-      currentPlayers === players.player1 ? players.player2 : players.player1;
-    return currentPlayers;
+    currentPlayer =
+      currentPlayer === players.player1 ? players.player2 : players.player1;
+    return currentPlayer;
   }
 
   function startGame() {
     gameBoardArray.resetBoard();
-    initGame(); // Initialise le jeu et le joueur courant
+    initGame(); // Initialize the game and the current player
   }
 
   function checkTie() {
-    for (let i = 0; i < DomElts.squares.length; i++) {
-      if (DomElts.squares[i].textContent === "") {
-        return false;
-      }
-    }
-    return true;
+    return !gameBoardArray.getBoard().includes(null);
   }
 
-  function checkWin(currentPlayer) {
-    for (let i = 0; i < winPatterns.length; i++) {
-      const [a, b, c] = winPatterns[i];
-      if (
-        DomElts.squares[a].textContent === currentPlayer &&
-        DomElts.squares[b].textContent === currentPlayer &&
-        DomElts.squares[c].textContent === currentPlayer
-      ) {
-        return true;
-      }
-    }
-    return false;
+  function checkWin(player) {
+    return winPatterns.some(
+      ([a, b, c]) =>
+        DomElts.squares[a].textContent === player &&
+        DomElts.squares[b].textContent === player &&
+        DomElts.squares[c].textContent === player
+    );
   }
 
   return {
     startGame,
     switchPlayer,
-    currentPlayers: () => currentPlayers,
+    currentPlayer: () => currentPlayer,
     checkWin,
     checkTie,
   };
@@ -84,17 +82,27 @@ const GameControllers = (function () {
 
 const Game = (function () {
   let gameActive = true;
+  let player1Name = "Player 1";
+  let player2Name = "Player 2";
+
+  const player1Input = document.getElementById("player1");
+  const player2Input = document.getElementById("player2");
+  const playerBtnSubmit = document.getElementById("player-tbn-submit");
+
+  playerBtnSubmit.addEventListener("click", (event) => {
+    event.preventDefault();
+    player1Name = player1Input.value || "Player 1";
+    player2Name = player2Input.value || "Player 2";
+  });
 
   function playGame() {
-    GameControllers.startGame(); // Démarre le jeu
+    GameControllers.startGame(); // Start the game
 
     DomElts.squares.forEach((square, index) => {
       square.addEventListener("click", function () {
         if (gameActive && !square.textContent) {
-          // Vérifie si la case est vide
-          square.textContent = GameControllers.currentPlayers(); // Utilise le joueur courant
-          console.log(square.textContent);
-          gameBoardArray.gameBoardArray[index] = square.textContent;
+          square.textContent = GameControllers.currentPlayer(); // Use the current player
+          gameBoardArray.updateBoard(index, square.textContent);
 
           if (GameControllers.checkWin(square.textContent)) {
             DomElts.message.textContent = `Game over! ${square.textContent} wins!`;
@@ -107,30 +115,28 @@ const Game = (function () {
             return;
           }
 
-          if (square.textContent == "X") {
-            DomElts.message.textContent = `Player1's turn!`;
-          } else {
-            DomElts.message.textContent = `Player2's turn!`;
-          }
+          DomElts.message.textContent =
+            GameControllers.currentPlayer() === "X"
+              ? `${player1Name}'s turn!`
+              : `${player2Name}'s turn!`;
 
-          GameControllers.switchPlayer(); // Change de joueur après le clic
-          console.log(gameBoardArray.gameBoardArray);
+          GameControllers.switchPlayer(); // Switch player after the click
         }
       });
     });
   }
 
   function newGame() {
-    gameActive = true; // Réinitialiser l'état du jeu
-    DomElts.message.textContent = ""; // Réinitialiser le message
+    gameActive = true; // Reset game state
+    DomElts.message.textContent = ""; // Reset message
     DomElts.squares.forEach((square) => {
-      square.textContent = ""; // Réinitialiser le contenu des carrés
+      square.textContent = ""; // Clear square content
     });
-    GameControllers.startGame(); // Réinitialiser le jeu
-    playGame(); // Relancer le jeu
+    GameControllers.startGame(); // Reset game
+    playGame(); // Restart the game
   }
 
-  DomElts.resetGame.addEventListener("click", newGame); // Attacher l'événement ici
+  DomElts.resetGame.addEventListener("click", newGame); // Attach event here
 
   return { playGame, newGame };
 })();
