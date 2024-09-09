@@ -107,12 +107,19 @@ const Game = (function () {
             return;
           }
 
+          if (square.textContent == "X") {
+            DomElts.message.textContent = `Player1's turn!`;
+          } else {
+            DomElts.message.textContent = `Player2's turn!`;
+          }
+
           GameControllers.switchPlayer(); // Change de joueur après le clic
           console.log(gameBoardArray.gameBoardArray);
         }
       });
     });
   }
+
   function newGame() {
     gameActive = true; // Réinitialiser l'état du jeu
     DomElts.message.textContent = ""; // Réinitialiser le message
